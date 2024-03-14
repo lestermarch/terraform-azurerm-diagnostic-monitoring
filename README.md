@@ -3,7 +3,7 @@ This module allows for the enablement of diagnostic logging to a log analytics w
 
 ## Examples
 
-1. [TODO]
+1. Single resource, all log and metric categories:
 
 ```hcl
 module {
@@ -13,7 +13,39 @@ module {
   location            = "uksouth"
   resource_group_name = "rg-example"
 
-  ...
+  log_analytics_workspace = "/subscriptions/.../workspaces/log-example"
+  resources = [
+    {
+      resource_id = "/subscriptions/.../storageAccounts/stexample"
+    }
+  ]
+}
+```
+
+2. Multiple resources, all log categories, custom metric categories:
+
+```hcl
+module {
+  source  = "lestermarch/diagnostic-monitoring/azurerm"
+  version = "1.0.0"
+
+  location            = "uksouth"
+  resource_group_name = "rg-example"
+
+  log_analytics_workspace = "/subscriptions/.../workspaces/log-example"
+  resources = [
+    {
+      resource_id = "/subscriptions/.../storageAccounts/stexample"
+    },
+    {
+      resource_id = "/subscriptions/.../vaults/kv-example"
+      metric_categories = [
+        "Availability",
+        "SaturationShoebox",
+        "ServiceApiLatency"
+      ]
+    }
+  ]
 }
 ```
 
