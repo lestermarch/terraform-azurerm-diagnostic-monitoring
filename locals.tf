@@ -12,6 +12,6 @@ locals {
   # Map of resource names to their diagnostic monitoring configuration
   resources_iterable = {
     for resource in var.resources :
-    element(split("/", resource.id), length(split("/", resource.id)) - 1) => resource
+    element(split("/", resource.resource_id), length(split("/", resource.resource_id)) - 1) => resource
   }
 }
