@@ -10,8 +10,46 @@ locals {
   }
 
   # Map of resource names to their diagnostic monitoring configuration
-  resources_iterable = {
-    for resource in var.resources :
-    element(split("/", resource.resource_id), length(split("/", resource.resource_id)) - 1) => resource
-  }
+  resources_iterable = merge(
+    {
+      for resource in var.resources :
+      element(split("/", resource.resource_id), length(split("/", resource.resource_id)) - 1) => resource
+    },
+    {
+      # Handle blob subresource for storage accounts
+      for resource in var.resources :
+      "${element(split("/", resource.resource_id), length(split("/", resource.resource_id)) - 1)}-blob" => {
+        resource_id       = "${resource.resource_id}/blobServices/default"
+        log_categories    = try(resource.storage_blob_log_categories, null)
+        metric_categories = try(resource.storage_blob_metric_categories, null)
+      } if lower(element(split("/", resource.resource_id), length(split("/", resource.resource_id)) - 2)) == "storageaccounts"
+    },
+    {
+      # Handle file subresource for storage accounts
+      for resource in var.resources :
+      "${element(split("/", resource.resource_id), length(split("/", resource.resource_id)) - 1)}-file" => {
+        resource_id       = "${resource.resource_id}/fileServices/default"
+        log_categories    = try(resource.storage_file_log_categories, null)
+        metric_categories = try(resource.storage_file_metric_categories, null)
+      } if lower(element(split("/", resource.resource_id), length(split("/", resource.resource_id)) - 2)) == "storageaccounts"
+    },
+    {
+      # Handle queue subresource for storage accounts
+      for resource in var.resources :
+      "${element(split("/", resource.resource_id), length(split("/", resource.resource_id)) - 1)}-queue" => {
+        resource_id       = "${resource.resource_id}/queueServices/default"
+        log_categories    = try(resource.storage_queue_log_categories, null)
+        metric_categories = try(resource.storage_queue_metric_categories, null)
+      } if lower(element(split("/", resource.resource_id), length(split("/", resource.resource_id)) - 2)) == "storageaccounts"
+    },
+    {
+      # Handle table subresource for storage accounts
+      for resource in var.resources :
+      "${element(split("/", resource.resource_id), length(split("/", resource.resource_id)) - 1)}-table" => {
+        resource_id       = "${resource.resource_id}/tableServices/default"
+        log_categories    = try(resource.storage_table_log_categories, null)
+        metric_categories = try(resource.storage_table_metric_categories, null)
+      } if lower(element(split("/", resource.resource_id), length(split("/", resource.resource_id)) - 2)) == "storageaccounts"
+    }
+  )
 }
