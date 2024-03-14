@@ -1,20 +1,32 @@
-variable "location" {
-  description = "The primary region into which resources will be deployed."
-  type        = string
-}
-
 variable "log_analytics_workspace_id" {
   description = "The ID of a log analytics workspace to forward network interface metrics to."
   type        = string
 }
 
-variable "resource_group_name" {
-  description = "The name of the resource group into which resources will be deployed."
-  type        = string
-}
-
-variable "resource_tags" {
-  default     = {}
-  description = "A map of key/value pairs to be assigned as resource tags on taggable resources."
-  type        = map(string)
+variable "resources" {
+  description = <<-EOT
+  A list of objects used to forward diagnostic logs and metrics to a log analytics workspace for one or more resources, in the format:
+  ```hcl
+  [
+    {
+      resource_id = "/subscriptions/.../storageAccounts/stexample"
+    },
+    {
+      resource_id = "/subscriptions/.../vaults/kv-example"
+      metric_categories = [
+        "Availability",
+        "SaturationShoebox",
+        "ServiceApiLatency"
+      ]
+    }
+  ]
+  ```
+  Notes:
+  - All log categories will be enabled unless `log_categories`
+  EOT
+  type = list(object({
+    resource_id       = string
+    log_categories    = optional(list(string))
+    metric_categories = optional(list(string))
+  }))
 }
