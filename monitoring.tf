@@ -1,11 +1,11 @@
 data "azurerm_monitor_diagnostic_categories" "monitoring" {
-  for_each = local.resources_iterable
+  for_each = var.resources
 
   resource_id = each.value.resource_id
 }
 
 resource "azurerm_monitor_diagnostic_setting" "monitoring" {
-  for_each = local.resources
+  for_each = local.all_resources
 
   name                       = each.key
   log_analytics_workspace_id = var.log_analytics_workspace_id
