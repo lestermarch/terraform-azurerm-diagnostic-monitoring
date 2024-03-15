@@ -5,19 +5,19 @@ variable "log_analytics_workspace_id" {
 
 variable "resources" {
   description = <<-EOT
-  A list of objects used to forward diagnostic logs and metrics to a log analytics workspace for one or more resources, in the format:
+  A map of objects used to forward diagnostic logs and metrics to a log analytics workspace for one or more resources, in the format:
   ```
-  [
-    {
+  {
+    crexample = {
       resource_id = "/subscriptions/.../registries/crexample"
     }
-    {
+    stexample = {
       resource_id = "/subscriptions/.../storageAccounts/stexample"
       storage_blob_log_categories = [
         "StorageDelete"
       ]
     },
-    {
+    kv-example = {
       resource_id = "/subscriptions/.../vaults/kv-example"
       metric_categories = [
         "Availability",
@@ -25,14 +25,15 @@ variable "resources" {
         "ServiceApiLatency"
       ]
     }
-  ]
+  }
   ```
   Notes:
+  - Each endpoint object must have a unique map key and must be statically defined. It is recommended to use the resource name for this, if known.
   - All log categories will be enabled unless `log_categories` is specified.
   - All metric categories will be enbled unless `metric_categories` is specified.
   - Storage account subresource (blob, file, queue, table) logs and metrics may be specified using the approprite attributes.
   EOT
-  type = list(object({
+  type = map(object({
     resource_id                     = string
     log_categories                  = optional(list(string))
     metric_categories               = optional(list(string))
