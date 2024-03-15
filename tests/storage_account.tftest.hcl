@@ -40,6 +40,10 @@ run "create_diagnostic_monitoring" {
     resources = {
       storage_account_one = {
         resource_id = run.create_storage_account.storage_account_id
+        storage_blob_log_categories = [
+          "StorageWrite",
+          "StorageDelete"
+        ]
       }
     }
   }

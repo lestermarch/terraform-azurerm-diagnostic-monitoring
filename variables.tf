@@ -46,4 +46,25 @@ variable "resources" {
     storage_table_log_categories    = optional(list(string))
     storage_table_metric_categories = optional(list(string))
   }))
+
+  # Ensure only storage account resources can specifiy storage subresource diagnostic categories
+  validation {
+    condition = alltrue([
+      for resource_key, resource in var.resources : (
+        lower(element(split("/", resource.resource_id), length(split("/", resource.resource_id)) - 2)) == "storageaccounts" ||
+        (
+          lower(element(split("/", resource.resource_id), length(split("/", resource.resource_id)) - 2)) != "storageaccounts" &&
+          resource.storage_blob_log_categories == null &&
+          resource.storage_blob_metric_categories == null &&
+          resource.storage_file_log_categories == null &&
+          resource.storage_file_metric_categories == null &&
+          resource.storage_queue_log_categories == null &&
+          resource.storage_queue_metric_categories == null &&
+          resource.storage_table_log_categories == null &&
+          resource.storage_table_metric_categories == null
+        )
+      )
+    ])
+    error_message = "Only storage account resources may have storage log or metric attributes set."
+  }
 }
