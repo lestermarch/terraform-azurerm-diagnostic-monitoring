@@ -37,10 +37,10 @@ run "create_diagnostic_monitoring" {
 
   variables {
     log_analytics_workspace_id = run.create_log_analytics_workspace.log_analytics_workspace_id
-    resources = [
-      {
+    resources = {
+      storage_account_one = {
         resource_id = run.create_storage_account.storage_account_id
       }
-    ]
+    }
   }
 }
