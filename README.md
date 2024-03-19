@@ -63,14 +63,22 @@ module {
   resources = {
     stexample = {
       resource_id = "/subscriptions/.../storageAccounts/stexample"
-      storage_blob_log_categories = [
-        "StorageWrite,
-        "StorageDelete"
-      ]
+    }
+    stexample_blob = {
+      resource_id = "${/subscriptions/.../storageAccounts/stexample}/blobServices/default"
     }
   }
 }
 ```
+
+The following suffixes may be added to a storage account resource ID to enable monitoring for the respective subresource:
+
+| Subresource | Suffix                 |
+| ----------- | ---------------------- |
+| Blob        | /blobServices/default  |
+| File        | /fileServices/default  |
+| Queue       | /queueServices/default |
+| Table       | /tableServices/default |
 
 4. Diagnostic monitoring configuration from YAML (or JSON):
 
